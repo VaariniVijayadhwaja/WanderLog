@@ -20,17 +20,17 @@ export default {
     boxShadow: {
         100: "2px 2px 0px 0px rgb(0, 0, 0)",
         200: "2px 2px 0px 2px rgb(0, 0, 0)",
-        300: "2px 2px 0px 2px rgb(238, 43, 105)",
+        300: "2px 2px 0px 2px rgb(101, 163, 13)",
     },
     screens: {
       xs: "475px",
     },
     colors: {
       primary: {
-          "100": "#FFE8F0",
-          DEFAULT: "#EE2B69",
+          "100": "#b3d782",
+          DEFAULT: "#5B7F29",
       },
-      secondary: "#FBE843",
+      secondary: "#5B7F29",
       black: {
           "100": "#333333",
           "200": "#141413",
