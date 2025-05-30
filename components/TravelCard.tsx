@@ -3,9 +3,11 @@ import { EyeIcon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { Author, Travelblogs } from "@/sanity.types";
+// import { Skeleton } from "@/components/ui/skeleton";
 import React from "react";
 
-// export type TravelTypeCard = Omit<Travel, "author"> & { author?: Author };
+export type TravelTypeCard = Omit<Travelblogs, "author"> & { author?: Author };
 
 const TravelCard = ({ post }: { post: TravelTypeCard }) => {
   const {
@@ -68,14 +70,14 @@ const TravelCard = ({ post }: { post: TravelTypeCard }) => {
   );
 };
 
-export const TravelCardSkeleton = () => (
-  <>
-    {[0, 1, 2, 3, 4].map((index) => (
-      <li key={`travel-skeleton-${index}`}>
-        <Skeleton className="travel-card_skeleton" />
-      </li>
-    ))}
-  </>
-);
+// export const TravelCardSkeleton = () => (
+//   <>
+//     {[0, 1, 2, 3, 4].map((index) => (
+//       <li key={`travel-skeleton-${index}`}>
+//         <Skeleton className="travel-card_skeleton" />
+//       </li>
+//     ))}
+//   </>
+// );
 
 export default TravelCard;
