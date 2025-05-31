@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Author, Travelblogs } from "@/sanity.types";
-// import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import React from "react";
 
 export type TravelTypeCard = Omit<Travelblogs, "author"> & { author?: Author };
@@ -38,7 +38,7 @@ const TravelCard = ({ post }: { post: TravelTypeCard }) => {
           <Link href={`/user/${author?._id}`}>
             <p className="text-16-medium line-clamp-1">{author?.name}</p>
           </Link>
-          <Link href={`/travel/${_id}`}>
+          <Link href={`/travelblog/${_id}`}>
             <h3 className="text-26-semibold line-clamp-1">{title}</h3>
           </Link>
         </div>
@@ -53,7 +53,7 @@ const TravelCard = ({ post }: { post: TravelTypeCard }) => {
         </Link>
       </div>
 
-      <Link href={`/travel/${_id}`}>
+      <Link href={`/travelblog/${_id}`}>
         <p className="travel-card_desc">{description}</p>
         <img src={image} alt={title} className="travel-card_img" />
       </Link>
@@ -63,21 +63,21 @@ const TravelCard = ({ post }: { post: TravelTypeCard }) => {
           <p className="text-16-medium">{category}</p>
         </Link>
         <Button className="startup-card_btn" asChild>
-          <Link href={`/travel/${_id}`}>Details</Link>
+          <Link href={`/travelblog/${_id}`}>Details</Link>
         </Button>
       </div>
     </li>
   );
 };
 
-// export const TravelCardSkeleton = () => (
-//   <>
-//     {[0, 1, 2, 3, 4].map((index) => (
-//       <li key={`travel-skeleton-${index}`}>
-//         <Skeleton className="travel-card_skeleton" />
-//       </li>
-//     ))}
-//   </>
-// );
+export const TravelCardSkeleton = () => (
+  <>
+    {[0, 1, 2, 3, 4].map((index) => (
+      <li key={`travel-skeleton-${index}`}>
+        <Skeleton className="travel-card_skeleton" />
+      </li>
+    ))}
+  </>
+);
 
 export default TravelCard;

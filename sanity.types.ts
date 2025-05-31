@@ -209,11 +209,43 @@ export type TRAVELBLOGS_QUERYResult = Array<{
   category: string | null;
   image: string | null;
 }>;
+// Variable: TRAVELBLOG_BY_ID_QUERY
+// Query: *[_type == "travelblogs" && _id == $id][0]{  _id,   title,   slug,  _createdAt,  author -> {    _id, name, username, image, bio  },   views,  description,  category,  image,  post,}
+export type TRAVELBLOG_BY_ID_QUERYResult = {
+  _id: string;
+  title: string | null;
+  slug: Slug | null;
+  _createdAt: string;
+  author: {
+    _id: string;
+    name: string | null;
+    username: string | null;
+    image: string | null;
+    bio: string | null;
+  } | null;
+  views: number | null;
+  description: string | null;
+  category: string | null;
+  image: string | null;
+  post: string | null;
+} | null;
+// Variable: TRAVELBLOG_VIEWS_QUERY
+// Query: *[_type == "travelblogs" && _id == $id][0]{        _id, views    }
+export type TRAVELBLOG_VIEWS_QUERYResult = {
+  _id: string;
+  views: number | null;
+} | null;
+// Variable: PLAYLIST_BY_SLUG_QUERY
+// Query: *[_type == "playlist" && slug.current == $slug][0]{  _id,  title,  slug,  select[]->{    _id,    _createdAt,    title,    slug,    author->{      _id,      name,      slug,      image,      bio    },    views,    description,    category,    image,    post  }}
+export type PLAYLIST_BY_SLUG_QUERYResult = null;
 
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
     "*[_type == \"travelblogs\" && defined(slug.current) && !defined($search) || title match $search || category match $search || author->name match $search] | order(_createdAt desc) {\n  _id, \n  title, \n  slug,\n  _createdAt,\n  author -> {\n    _id, name, image, bio\n  }, \n  views,\n  description,\n  category,\n  image,\n}": TRAVELBLOGS_QUERYResult;
+    "*[_type == \"travelblogs\" && _id == $id][0]{\n  _id, \n  title, \n  slug,\n  _createdAt,\n  author -> {\n    _id, name, username, image, bio\n  }, \n  views,\n  description,\n  category,\n  image,\n  post,\n}": TRAVELBLOG_BY_ID_QUERYResult;
+    "\n    *[_type == \"travelblogs\" && _id == $id][0]{\n        _id, views\n    }\n": TRAVELBLOG_VIEWS_QUERYResult;
+    "*[_type == \"playlist\" && slug.current == $slug][0]{\n  _id,\n  title,\n  slug,\n  select[]->{\n    _id,\n    _createdAt,\n    title,\n    slug,\n    author->{\n      _id,\n      name,\n      slug,\n      image,\n      bio\n    },\n    views,\n    description,\n    category,\n    image,\n    post\n  }\n}": PLAYLIST_BY_SLUG_QUERYResult;
   }
 }
