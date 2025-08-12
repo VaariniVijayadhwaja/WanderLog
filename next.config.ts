@@ -11,9 +11,9 @@ const nextConfig: NextConfig = {
     ]
   },
   /* config options here */
-  experimental: {
-    ppr: "incremental",
-  },
+  // experimental: {
+  //   ppr: "incremental",
+  // },
   devIndicators: {
     // appIsrStatus: true,
     // buildActivity: true,
