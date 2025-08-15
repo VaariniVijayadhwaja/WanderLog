@@ -7,8 +7,8 @@ import MDEditor from "@uiw/react-md-editor";
 import "@uiw/react-md-editor/markdown-editor.css";
 
 const TravelBlogForm = () => {
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const [post, setPost] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
   const router = useRouter();
 
   const [state, formAction, isPending] = useActionState(createTravelBlog, {
@@ -19,7 +19,12 @@ const TravelBlogForm = () => {
   // Handle successful form submission
   useEffect(() => {
     if (state?.status === "SUCCESS" && state?._id) {
-      router.push(`/travelblog/${state._id}`);
+      setShowSuccess(true);
+      
+      // Show success message briefly before redirect
+      setTimeout(() => {
+        router.push(`/travelblog/${state._id}`);
+      }, 1500);
     }
   }, [state, router]);
 
@@ -27,6 +32,26 @@ const TravelBlogForm = () => {
     formData.set("post", post);
     await formAction(formData);
   };
+
+  // Get field-specific errors
+  const getFieldError = (fieldName: string) => {
+    return state?.issues?.[fieldName] || "";
+  };
+
+  if (showSuccess) {
+    return (
+      <section className="section_container">
+        <div className="startup-form">
+          <div className="text-center space-y-4">
+            <div className="text-6xl">🎉</div>
+            <h2 className="text-30-bold text-green-600">Success!</h2>
+            <p className="text-16-medium">Your travel blog has been created successfully!</p>
+            <p className="text-14-normal">Redirecting you to your post...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="section_container">
@@ -43,8 +68,8 @@ const TravelBlogForm = () => {
             placeholder="Travel Blog Title"
           />
 
-          {errors.title && (
-            <p className="startup-form_error">{errors.title}</p>
+          {getFieldError("title") && (
+            <p className="startup-form_error">{getFieldError("title")}</p>
           )}
         </div>
 
@@ -60,8 +85,8 @@ const TravelBlogForm = () => {
             placeholder="Brief description of your travel experience"
           />
 
-          {errors.description && (
-            <p className="startup-form_error">{errors.description}</p>
+          {getFieldError("description") && (
+            <p className="startup-form_error">{getFieldError("description")}</p>
           )}
         </div>
 
@@ -77,8 +102,8 @@ const TravelBlogForm = () => {
             placeholder="e.g. Adventure, City, Beach, Culture"
           />
 
-          {errors.category && (
-            <p className="startup-form_error">{errors.category}</p>
+          {getFieldError("category") && (
+            <p className="startup-form_error">{getFieldError("category")}</p>
           )}
         </div>
 
@@ -94,8 +119,8 @@ const TravelBlogForm = () => {
             placeholder="https://example.com/your-travel-image.jpg"
           />
 
-          {errors.image && (
-            <p className="startup-form_error">{errors.image}</p>
+          {getFieldError("image") && (
+            <p className="startup-form_error">{getFieldError("image")}</p>
           )}
         </div>
 
@@ -126,8 +151,8 @@ const TravelBlogForm = () => {
             />
           </div>
 
-          {errors.post && (
-            <p className="startup-form_error">{errors.post}</p>
+          {getFieldError("post") && (
+            <p className="startup-form_error">{getFieldError("post")}</p>
           )}
         </div>
 
@@ -139,8 +164,8 @@ const TravelBlogForm = () => {
           {isPending ? "Creating..." : "Create Travel Blog"}
         </button>
 
-        {state?.error && (
-          <p className="startup-form_error">{state.error}</p>
+        {state?.error && state?.status === "ERROR" && (
+          <p className="startup-form_error text-center">{state.error}</p>
         )}
       </form>
     </section>

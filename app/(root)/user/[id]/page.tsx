@@ -36,7 +36,7 @@ export default async function UserProfile({ params }: UserProfileProps) {
           </div>
 
           <Image
-            src={user.image || "/default-avatar.png"}
+            src={user.image || "/default-avatar.svg"}
             alt={user.name || "User"}
             width={220}
             height={220}
@@ -52,7 +52,7 @@ export default async function UserProfile({ params }: UserProfileProps) {
         </div>
 
         <div className="flex-1 flex flex-col gap-5 lg:-mt-5">
-          <p className="text-30-bold">
+          <p className="text-30-semibold !text-white-100">
             {user.name}'s Travel Stories
           </p>
           <ul className="card_grid-sm">
