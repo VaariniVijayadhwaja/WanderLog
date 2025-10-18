@@ -19,6 +19,7 @@ const TravelCard = ({ post }: { post: TravelTypeCard }) => {
     _id,
     image,
     description,
+    hashtags,
   } = post;
 
   return (
@@ -35,28 +36,62 @@ const TravelCard = ({ post }: { post: TravelTypeCard }) => {
 
       <div className="flex-between mt-5 gap-5">
         <div className="flex-1">
-          <Link href={`/user/${author?._id}`}>
+          {author?._id ? (
+            <Link href={`/user/${author._id}`}>
+              <p className="text-16-medium line-clamp-1">{author?.name}</p>
+            </Link>
+          ) : (
             <p className="text-16-medium line-clamp-1">{author?.name}</p>
-          </Link>
+          )}
           <Link href={`/travelblog/${_id}`}>
             <h3 className="text-26-semibold line-clamp-1">{title}</h3>
           </Link>
         </div>
-        <Link href={`/user/${author?._id}`}>
+        {author?._id ? (
+          <Link href={`/user/${author._id}`}>
+            <Image
+              src={author?.image || "/default-avatar.svg"}
+              alt={author?.name || "Author"}
+              width={48}
+              height={48}
+              className="rounded-full"
+            />
+          </Link>
+        ) : (
           <Image
-            src={author?.image || "https://placehold.co/48x48"}
+            src={author?.image || "/default-avatar.svg"}
             alt={author?.name || "Author"}
             width={48}
             height={48}
             className="rounded-full"
           />
-        </Link>
+        )}
       </div>
 
       <Link href={`/travelblog/${_id}`}>
         <p className="travel-card_desc">{description}</p>
         <img src={image} alt={title} className="travel-card_img" />
       </Link>
+
+      {/* Hashtags - show first 3 */}
+      {hashtags && hashtags.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mt-3">
+          {hashtags.slice(0, 3).map((hashtag, index) => (
+            <Link
+              key={index}
+              href={`/?query=${hashtag}`}
+              className="text-12-medium text-primary-100 hover:text-primary/80 transition-colors"
+            >
+              #{hashtag}
+            </Link>
+          ))}
+          {hashtags.length > 3 && (
+            <span className="text-12-medium text-black-300">
+              +{hashtags.length - 3} more
+            </span>
+          )}
+        </div>
+      )}
 
       <div className="flex-between gap-3 mt-5">
         <Link href={`/?query=${category?.toLowerCase()}`}>

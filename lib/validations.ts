@@ -23,4 +23,8 @@ export const travelBlogSchema = z.object({
       }
     }, "URL must be a valid image"),
   post: z.string().min(10, "Content should be at least 10 characters"),
+  hashtags: z
+    .array(z.string().min(1).max(30))
+    .max(10, "Maximum 10 hashtags allowed")
+    .optional(),
 }); 

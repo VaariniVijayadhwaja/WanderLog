@@ -5,10 +5,16 @@ import { useRouter } from "next/navigation";
 import { createTravelBlog } from "@/lib/actions";
 import MDEditor from "@uiw/react-md-editor";
 import "@uiw/react-md-editor/markdown-editor.css";
+import { Sparkles, RefreshCw } from "lucide-react";
+import HashtagSelector from "@/components/HashtagSelector";
 
 const TravelBlogForm = () => {
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const [post, setPost] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [suggestedHashtags, setSuggestedHashtags] = useState<string[]>([]);
+  const [selectedHashtags, setSelectedHashtags] = useState<string[]>([]);
+  const [isGeneratingHashtags, setIsGeneratingHashtags] = useState(false);
+  const [hashtagError, setHashtagError] = useState("");
   const router = useRouter();
 
   const [state, formAction, isPending] = useActionState(createTravelBlog, {
@@ -19,14 +25,109 @@ const TravelBlogForm = () => {
   // Handle successful form submission
   useEffect(() => {
     if (state?.status === "SUCCESS" && state?._id) {
-      router.push(`/travelblog/${state._id}`);
+      setShowSuccess(true);
+      
+      // Show success message briefly before redirect
+      setTimeout(() => {
+        router.push(`/travelblog/${state._id}`);
+      }, 1500);
     }
   }, [state, router]);
 
   const handleFormSubmit = async (formData: FormData) => {
     formData.set("post", post);
+    formData.set("hashtags", JSON.stringify(selectedHashtags));
     await formAction(formData);
   };
+
+  // Generate hashtags using LLM
+  const handleGenerateHashtags = async () => {
+    setHashtagError("");
+
+    // Get title and content from form
+    const form = document.querySelector("form") as HTMLFormElement;
+    const titleInput = form?.querySelector("#title") as HTMLInputElement;
+    const title = titleInput?.value || "";
+
+    if (!title.trim()) {
+      setHashtagError("Please enter a title first");
+      return;
+    }
+
+    if (!post.trim()) {
+      setHashtagError("Please write some content first");
+      return;
+    }
+
+    setIsGeneratingHashtags(true);
+
+    try {
+      const response = await fetch("/api/generate-hashtags", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title,
+          content: post,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to generate hashtags");
+      }
+
+      if (data.success && data.hashtags) {
+        setSuggestedHashtags(data.hashtags);
+        // Auto-select first 6 hashtags
+        setSelectedHashtags(data.hashtags.slice(0, 6));
+      }
+    } catch (error) {
+      console.error("Error generating hashtags:", error);
+      setHashtagError(
+        error instanceof Error ? error.message : "Failed to generate hashtags"
+      );
+    } finally {
+      setIsGeneratingHashtags(false);
+    }
+  };
+
+  // Toggle hashtag selection
+  const handleToggleHashtag = (hashtag: string) => {
+    setSelectedHashtags((prev) =>
+      prev.includes(hashtag)
+        ? prev.filter((h) => h !== hashtag)
+        : [...prev, hashtag]
+    );
+  };
+
+  // Remove hashtag from suggestions
+  const handleRemoveHashtag = (hashtag: string) => {
+    setSuggestedHashtags((prev) => prev.filter((h) => h !== hashtag));
+    setSelectedHashtags((prev) => prev.filter((h) => h !== hashtag));
+  };
+
+  // Get field-specific errors
+  const getFieldError = (fieldName: string) => {
+    return state?.issues?.[fieldName] || "";
+  };
+
+  if (showSuccess) {
+    return (
+      <section className="section_container">
+        <div className="startup-form">
+          <div className="text-center space-y-4">
+            <div className="text-6xl">🎉</div>
+            <h2 className="text-30-bold text-green-600">Success!</h2>
+            <p className="text-16-medium">Your travel blog has been created successfully!</p>
+            <p className="text-14-normal">Redirecting you to your post...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="section_container">
@@ -43,8 +144,8 @@ const TravelBlogForm = () => {
             placeholder="Travel Blog Title"
           />
 
-          {errors.title && (
-            <p className="startup-form_error">{errors.title}</p>
+          {getFieldError("title") && (
+            <p className="startup-form_error">{getFieldError("title")}</p>
           )}
         </div>
 
@@ -60,8 +161,8 @@ const TravelBlogForm = () => {
             placeholder="Brief description of your travel experience"
           />
 
-          {errors.description && (
-            <p className="startup-form_error">{errors.description}</p>
+          {getFieldError("description") && (
+            <p className="startup-form_error">{getFieldError("description")}</p>
           )}
         </div>
 
@@ -77,8 +178,8 @@ const TravelBlogForm = () => {
             placeholder="e.g. Adventure, City, Beach, Culture"
           />
 
-          {errors.category && (
-            <p className="startup-form_error">{errors.category}</p>
+          {getFieldError("category") && (
+            <p className="startup-form_error">{getFieldError("category")}</p>
           )}
         </div>
 
@@ -94,8 +195,8 @@ const TravelBlogForm = () => {
             placeholder="https://example.com/your-travel-image.jpg"
           />
 
-          {errors.image && (
-            <p className="startup-form_error">{errors.image}</p>
+          {getFieldError("image") && (
+            <p className="startup-form_error">{getFieldError("image")}</p>
           )}
         </div>
 
@@ -126,8 +227,59 @@ const TravelBlogForm = () => {
             />
           </div>
 
-          {errors.post && (
-            <p className="startup-form_error">{errors.post}</p>
+          {getFieldError("post") && (
+            <p className="startup-form_error">{getFieldError("post")}</p>
+          )}
+        </div>
+
+        {/* Hashtag Generation Section */}
+        <div className="space-y-3">
+          <label className="startup-form_label">Hashtags (Optional)</label>
+
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={handleGenerateHashtags}
+              disabled={isGeneratingHashtags || isPending}
+              className="flex items-center gap-2 px-4 py-2 bg-primary-100 text-white rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              {isGeneratingHashtags ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <span>Generating...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4" />
+                  <span>Generate Hashtags</span>
+                </>
+              )}
+            </button>
+
+            {suggestedHashtags.length > 0 && (
+              <button
+                type="button"
+                onClick={handleGenerateHashtags}
+                disabled={isGeneratingHashtags || isPending}
+                className="flex items-center gap-2 px-4 py-2 bg-black-200/10 text-black-200 rounded-md hover:bg-black-200/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                <RefreshCw className="w-4 h-4" />
+                <span>Regenerate</span>
+              </button>
+            )}
+          </div>
+
+          {hashtagError && (
+            <p className="startup-form_error">{hashtagError}</p>
+          )}
+
+          {suggestedHashtags.length > 0 && (
+            <HashtagSelector
+              hashtags={suggestedHashtags}
+              selectedHashtags={selectedHashtags}
+              onToggle={handleToggleHashtag}
+              onRemove={handleRemoveHashtag}
+            />
           )}
         </div>
 
@@ -139,8 +291,8 @@ const TravelBlogForm = () => {
           {isPending ? "Creating..." : "Create Travel Blog"}
         </button>
 
-        {state?.error && (
-          <p className="startup-form_error">{state.error}</p>
+        {state?.error && state?.status === "ERROR" && (
+          <p className="startup-form_error text-center">{state.error}</p>
         )}
       </form>
     </section>

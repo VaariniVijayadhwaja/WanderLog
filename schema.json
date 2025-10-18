@@ -113,6 +113,16 @@
           "type": "string"
         },
         "optional": true
+      },
+      "hashtags": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "string"
+          }
+        },
+        "optional": true
       }
     }
   },

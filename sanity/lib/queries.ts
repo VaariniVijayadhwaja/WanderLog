@@ -13,6 +13,7 @@ export const TRAVELBLOGS_QUERY =
   description,
   category,
   image,
+  hashtags,
 }`);
 
 export const TRAVELBLOG_BY_ID_QUERY =
@@ -29,6 +30,7 @@ export const TRAVELBLOG_BY_ID_QUERY =
   category,
   image,
   post,
+  hashtags,
 }`);
 
 export const TRAVELBLOG_VIEWS_QUERY = defineQuery(`
