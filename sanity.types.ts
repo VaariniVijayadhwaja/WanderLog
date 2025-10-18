@@ -32,6 +32,7 @@ export type Travelblogs = {
   category?: string;
   image?: string;
   post?: string;
+  hashtags?: Array<string>;
 };
 
 export type Author = {
@@ -172,7 +173,7 @@ export type AllSanitySchemaTypes = Travelblogs | Author | Markdown | SanityImage
 export declare const internalGroqTypeReferenceTo: unique symbol;
 // Source: ./sanity/lib/queries.ts
 // Variable: TRAVELBLOGS_QUERY
-// Query: *[_type == "travelblogs" && defined(slug.current) && !defined($search) || title match $search || category match $search || author->name match $search] | order(_createdAt desc) {  _id,   title,   slug,  _createdAt,  author -> {    _id, name, image, bio  },   views,  description,  category,  image,}
+// Query: *[_type == "travelblogs" && defined(slug.current) && !defined($search) || title match $search || category match $search || author->name match $search] | order(_createdAt desc) {  _id,   title,   slug,  _createdAt,  author -> {    _id, name, image, bio  },   views,  description,  category,  image,  hashtags,}
 export type TRAVELBLOGS_QUERYResult = Array<{
   _id: string;
   title: null;
@@ -183,6 +184,7 @@ export type TRAVELBLOGS_QUERYResult = Array<{
   description: null;
   category: null;
   image: string | null;
+  hashtags: null;
 } | {
   _id: string;
   title: string | null;
@@ -193,6 +195,7 @@ export type TRAVELBLOGS_QUERYResult = Array<{
   description: string | null;
   category: null;
   image: null;
+  hashtags: null;
 } | {
   _id: string;
   title: string | null;
@@ -208,9 +211,10 @@ export type TRAVELBLOGS_QUERYResult = Array<{
   description: string | null;
   category: string | null;
   image: string | null;
+  hashtags: Array<string> | null;
 }>;
 // Variable: TRAVELBLOG_BY_ID_QUERY
-// Query: *[_type == "travelblogs" && _id == $id][0]{  _id,   title,   slug,  _createdAt,  author -> {    _id, name, username, image, bio  },   views,  description,  category,  image,  post,}
+// Query: *[_type == "travelblogs" && _id == $id][0]{  _id,   title,   slug,  _createdAt,  author -> {    _id, name, username, image, bio  },   views,  description,  category,  image,  post,  hashtags,}
 export type TRAVELBLOG_BY_ID_QUERYResult = {
   _id: string;
   title: string | null;
@@ -228,6 +232,7 @@ export type TRAVELBLOG_BY_ID_QUERYResult = {
   category: string | null;
   image: string | null;
   post: string | null;
+  hashtags: Array<string> | null;
 } | null;
 // Variable: TRAVELBLOG_VIEWS_QUERY
 // Query: *[_type == "travelblogs" && _id == $id][0]{        _id, views    }
@@ -277,8 +282,8 @@ export type PLAYLIST_BY_SLUG_QUERYResult = null;
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    "*[_type == \"travelblogs\" && defined(slug.current) && !defined($search) || title match $search || category match $search || author->name match $search] | order(_createdAt desc) {\n  _id, \n  title, \n  slug,\n  _createdAt,\n  author -> {\n    _id, name, image, bio\n  }, \n  views,\n  description,\n  category,\n  image,\n}": TRAVELBLOGS_QUERYResult;
-    "*[_type == \"travelblogs\" && _id == $id][0]{\n  _id, \n  title, \n  slug,\n  _createdAt,\n  author -> {\n    _id, name, username, image, bio\n  }, \n  views,\n  description,\n  category,\n  image,\n  post,\n}": TRAVELBLOG_BY_ID_QUERYResult;
+    "*[_type == \"travelblogs\" && defined(slug.current) && !defined($search) || title match $search || category match $search || author->name match $search] | order(_createdAt desc) {\n  _id, \n  title, \n  slug,\n  _createdAt,\n  author -> {\n    _id, name, image, bio\n  }, \n  views,\n  description,\n  category,\n  image,\n  hashtags,\n}": TRAVELBLOGS_QUERYResult;
+    "*[_type == \"travelblogs\" && _id == $id][0]{\n  _id, \n  title, \n  slug,\n  _createdAt,\n  author -> {\n    _id, name, username, image, bio\n  }, \n  views,\n  description,\n  category,\n  image,\n  post,\n  hashtags,\n}": TRAVELBLOG_BY_ID_QUERYResult;
     "\n    *[_type == \"travelblogs\" && _id == $id][0]{\n        _id, views\n    }\n": TRAVELBLOG_VIEWS_QUERYResult;
     "\n*[_type == \"author\" && id == $id][0]{\n    _id,\n    id,\n    name,\n    username,\n    email,\n    image,\n    bio\n}\n": AUTHOR_BY_GITHUB_ID_QUERYResult;
     "\n*[_type == \"author\" && _id == $id][0]{\n    _id,\n    id,\n    name,\n    username,\n    email,\n    image,\n    bio\n}\n": AUTHOR_BY_ID_QUERYResult;

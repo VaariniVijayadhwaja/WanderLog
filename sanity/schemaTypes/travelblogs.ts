@@ -44,5 +44,12 @@ export const travelblogs = defineType({
       name: "post",
       type: "markdown",
     }),
+    defineField({
+      name: "hashtags",
+      type: "array",
+      of: [{ type: "string" }],
+      validation: (Rule) =>
+        Rule.max(10).error("Maximum 10 hashtags allowed"),
+    }),
   ],
 });

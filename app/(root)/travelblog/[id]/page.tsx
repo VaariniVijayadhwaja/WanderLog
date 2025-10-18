@@ -92,6 +92,24 @@ export default async function TravelBlogPage({ params }: TravelBlogPageProps) {
           ) : (
             <p className="no-result">No details provided</p>
           )}
+
+          {/* Display Hashtags */}
+          {post.hashtags && post.hashtags.length > 0 && (
+            <div className="mt-8">
+              <h4 className="text-18-semibold mb-3">Tags</h4>
+              <div className="flex flex-wrap gap-2">
+                {post.hashtags.map((hashtag, index) => (
+                  <Link
+                    key={index}
+                    href={`/?query=${hashtag}`}
+                    className="px-3 py-1.5 bg-primary-100/10 text-primary-100 hover:bg-primary-100/20 rounded-full text-14-medium transition-colors"
+                  >
+                    #{hashtag}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <hr className="divider" />

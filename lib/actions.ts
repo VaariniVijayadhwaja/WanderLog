@@ -38,15 +38,26 @@ export const createTravelBlog = async (state: any, form: FormData) => {
     });
   }
 
-  const { title, description, category, image, post } = Object.fromEntries(form);
+  const { title, description, category, image, post, hashtags } = Object.fromEntries(form);
 
   try {
+    // Parse hashtags from JSON string
+    let parsedHashtags: string[] = [];
+    if (hashtags && typeof hashtags === "string") {
+      try {
+        parsedHashtags = JSON.parse(hashtags);
+      } catch (e) {
+        console.error("Failed to parse hashtags:", e);
+      }
+    }
+
     const travelBlog = {
       title,
       description,
       category,
       image,
       post,
+      hashtags: parsedHashtags,
     };
 
     // Validate with Zod
@@ -71,6 +82,7 @@ export const createTravelBlog = async (state: any, form: FormData) => {
       category,
       image,
       post: post,
+      hashtags: parsedHashtags,
       views: 0,
     });
 
